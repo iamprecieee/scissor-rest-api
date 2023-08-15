@@ -1,0 +1,8 @@
+__pycache__
+.vscode
+instance
+templates
+static
+views.py
+ini.py
+senv
