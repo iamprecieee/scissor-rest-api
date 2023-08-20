@@ -1,5 +1,6 @@
 from flask import current_app as app
 from flask_smorest import Blueprint, abort
+from flask_jwt_extended import jwt_required
 from flask.views import MethodView
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
@@ -14,6 +15,7 @@ blp = Blueprint("Shorturls", "shorturls", description="Operations on Short URLs"
 class ShortUrlList(MethodView):
     @blp.doc(description="This returns a list of all existing short URLs and corresponding original URLs.")
     @blp.response(200, ShortUrlSchema(many=True))
+    @jwt_required()
     def get(self):
         """Return list of short URLs"""
         shorturls = ShortUrlModel.query.all()
@@ -23,6 +25,7 @@ class ShortUrlList(MethodView):
     @blp.doc(description="This creates a new random short URL for a provided original URL.")
     @blp.arguments(ShortUrlSchema)
     @blp.response(201, ShortUrlSchema)
+    @jwt_required()
     def post(self, urldata):
         """Create new short URL"""
         short = app.config["DEFAULT_SERVER"] + generate_short_url()
@@ -47,6 +50,7 @@ class ShortUrlList(MethodView):
 class ShortUrl(MethodView):
     @blp.doc(description="This returns a specific existing short URL and corresponding original URL.")
     @blp.response(201, ShortUrlSchema)
+    @jwt_required()
     def get(self, url_key):
         """Return specific short URL"""
         url = ShortUrlModel.query.filter(ShortUrlModel.short_url.contains(url_key)).first()
@@ -55,6 +59,7 @@ class ShortUrl(MethodView):
         return url
             
     @blp.doc(description="This deletes a specific existing short URL and corresponding original URL.")
+    @jwt_required(fresh=True)
     def delete(self, url_key):
         """Delete specific short URL"""
         url = ShortUrlModel.query.filter(ShortUrlModel.short_url.contains(url_key)).first()

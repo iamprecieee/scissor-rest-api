@@ -11,3 +11,4 @@ class ShortUrlModel(db.Model):
     short_url = db.Column(db.String(120), unique=True, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     clicks = db.Column(db.Integer, default=0)
+    user_id = db.relationship(db.Integer, db.ForeignKey("user.id"))
