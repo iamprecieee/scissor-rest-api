@@ -44,7 +44,7 @@ class Login(MethodView):
             abort(400, message="Enter Username or Email")
         elif "username" in userdata:
             user = UserModel.query.filter(UserModel.username == userdata["username"]).first()
-        elif "email" in userdata:
+        else:
             user = UserModel.query.filter(UserModel.email == userdata["email"]).first()
         if user and pbkdf2_sha256.verify(userdata["password"], user.password):
             access_token = create_access_token(identity=user.id, fresh=True)
@@ -86,8 +86,7 @@ class User(MethodView):
     @jwt_required()
     def get(self):
         """Returns a list of Users"""
-        users = UserModel.query.all()
-        return users
+        return UserModel.query.all()
     
 
 @blp.route("/user/<user_id>")
