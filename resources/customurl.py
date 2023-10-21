@@ -18,8 +18,7 @@ class ShortUrlList(MethodView):
     @jwt_required()
     def get(self):
         """Return list of custom-short URLs"""
-        customurls = CustomUrlModel.query.all()
-        return customurls
+        return CustomUrlModel.query.all()
     
     @blp.doc(description="This creates a new custom-short URL for a provided original URL.")
     @blp.arguments(CustomUrlSchema)
@@ -31,8 +30,9 @@ class ShortUrlList(MethodView):
             abort(400, message="URL fields cannot be empty")
         elif not validate_url(urldata["original_url"]):
             abort(400, message="Invalid URL")
-        shorturl = ShortUrlModel.query.filter(ShortUrlModel.short_url.contains(urldata["custom_url"])).first()
-        if shorturl:
+        if shorturl := ShortUrlModel.query.filter(
+            ShortUrlModel.short_url.contains(urldata["custom_url"])
+        ).first():
             abort(400, message="Similar short URL already exists")
         urldata["custom_url"] = app.config["DEFAULT_SERVER"] + urldata["custom_url"]
         url = CustomUrlModel(**urldata)

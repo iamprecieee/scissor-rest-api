@@ -18,8 +18,7 @@ class ShortUrlList(MethodView):
     @jwt_required()
     def get(self):
         """Return list of short URLs"""
-        shorturls = ShortUrlModel.query.all()
-        return shorturls
+        return ShortUrlModel.query.all()
         
     
     @blp.doc(description="This creates a new random short URL for a provided original URL.")
